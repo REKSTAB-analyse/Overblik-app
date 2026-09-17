@@ -1,4 +1,22 @@
 import streamlit as st
+from sentence_transformers import SentenceTransformer
+
+
+@st.cache_resource
+def load_model():
+    return SentenceTransformer("intfloat/multilingual-e5-small")
+
+
+@st.cache_data
+def embed_katalog(apps):
+    model = load_model()
+    tekster = [
+        f"passage: {a['navn']} {a['beskrivelse']} "
+        f"{a.get('keywords', '')}"
+        for a in apps
+    ]
+    return model.encode(tekster, normalize_embeddings=True)
+
 
 TECH_COLORS = {
     "Streamlit": "#ff4b4b",
@@ -27,7 +45,7 @@ with dimitender:
             "keywords": "dimmitender, dimittender, kandidater, bachelorer, færdiguddannede, humaniora, HUM, arbejdsmarked, beskæftigelse, ledighed, job, karriere, erhverv, brancher, sektorer, privat, offentlig, løn, indkomst, overgang, efter studiet, uddannelse, arbejdsliv, jobfunktion, stilling, ansættelse, fuldtid, deltid, iværksætter, arbejdsgivere, jobmatch, akademikere, DJØF, DM, fagforening, dimissionsår, kohort, årgang",
             "tech": "Shiny",
         },
-        # Tilføf flere her
+        # Tilføj flere her
     ]
 
     cols = st.columns(3)
@@ -80,38 +98,52 @@ with forskning:
             </a>
             """, unsafe_allow_html=True)
 
+alle_apps = apps_forskning + apps_dimitender 
+katalog_embeddings = embed_katalog(alle_apps)
 
 
 with st.sidebar:
     st.header("Find en app")
     søgning = st.text_input("Søg efter en app")
 
+    TÆRSKEL = 0.78
+
     if søgning:
-        alle_apps = apps_forskning + apps_dimitender # + ...
+        model = load_model()
+        forespørgsel = model.encode(
+            f"query: {søgning}", normalize_embeddings=True
+        )
+        scores = katalog_embeddings @ forespørgsel
+        rækkefølge = scores.argsort()[::-1]
 
-        søgeord = søgning.lower().split()
+        scorede = [
+            (scores[i], alle_apps[i])
+            for i in rækkefølge
+            if scores[i] >= TÆRSKEL
+        ]
 
-        scorede = []
-
-        for app in alle_apps:
-            søgetekst = f"{app['navn']} {app['beskrivelse']} {app.get('keywords', '')}".lower().replace(",", " ")
-            score = sum(ord in søgetekst for ord in søgeord)
-            if score > 0:
-                scorede.append((score, app))
-
-        scorede.sort(reverse=True, key=lambda x: x[0])
+        if not scorede:
+            st.sidebar.caption(
+                "Ingen gode match - prøv at omformulere søgningen"
+            )
 
         for score, app in scorede:
             tech_farve = TECH_COLORS.get(app["tech"], "#888888")
+            match_pct = f"{score:.0%}"
 
             st.sidebar.markdown(f"""
             <a href="{app['url']}" target="_blank" style="text-decoration:none; color:inherit">
                 <div style="border:1px solid #ddd; border-radius:10px; padding:15px; text-align:center; margin-bottom:10px">
                     <h4 style="margin:0 0 5px 0">{app['navn']}</h4>
                     <p style="color:gray; font-size:0.85em; margin:0 0 8px 0">{app['beskrivelse']}</p>
-                    <span style="background:{tech_farve}22; color:{tech_farve}; 
+                    <span style="background:{tech_farve}22; color:{tech_farve};
                                 padding:2px 10px; border-radius:20px; font-size:0.75em">
                         {app['tech']}
+                    </span>
+                    <span style="background:#eee; color:#555;
+                                padding:2px 10px; border-radius:20px; font-size:0.75em;
+                                margin-left:6px">
+                        {match_pct} match
                     </span>
                 </div>
             </a>
