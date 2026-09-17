@@ -15,7 +15,6 @@ def embed_katalog(apps):
     ]
     return model.encode(tekster, normalize_embeddings=True)
 
-
 TECH_COLORS = {
     "Streamlit": "#ff4b4b",
     "Shiny": "#75aadb",
@@ -44,7 +43,13 @@ with dimitender:
             "keywords": "dimmitender, dimittender, kandidater, bachelorer, færdiguddannede, humaniora, HUM, arbejdsmarked, beskæftigelse, ledighed, job, karriere, erhverv, brancher, sektorer, privat, offentlig, løn, indkomst, overgang, efter studiet, uddannelse, arbejdsliv, jobfunktion, stilling, ansættelse, fuldtid, deltid, iværksætter, arbejdsgivere, jobmatch, akademikere, DJØF, DM, fagforening, dimissionsår, kohort, årgang",
             "tech": "Shiny",
         },
-        # Tilføj flere her
+        {
+            "navn": "JUR-dimitendernes arbejdsmarked",
+            "url": "https://rekstabanalyse.shinyapps.io/HUM_arbejdsmarked/",
+            "beskrivelse": "Overblik over dimitenderne fra JUR's arbejdsmarked efter endt uddannelse",
+            "keywords": "dimmitender, dimittender, kandidater, bachelorer, færdiguddannede, juridiske, JUR, arbejdsmarked, beskæftigelse, ledighed, job, karriere, erhverv, brancher, sektorer, privat, offentlig, løn, indkomst, overgang, efter studiet, uddannelse, arbejdsliv, jobfunktion, stilling, ansættelse, fuldtid, deltid, iværksætter, arbejdsgivere, jobmatch, akademikere, DJØF, DM, fagforening, dimissionsår, kohort, årgang",
+            "tech": "Shiny",
+        },
     ]
 
     cols = st.columns(3)
