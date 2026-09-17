@@ -143,7 +143,7 @@ with forskning:
             </a>
             """, unsafe_allow_html=True)
 
-alle_apps = apps_forskning + apps_dimitender 
+alle_apps = apps_forskning + apps_dimitender + apps_organisation
 katalog_embeddings = embed_katalog(alle_apps)
 
 
