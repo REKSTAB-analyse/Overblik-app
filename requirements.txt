@@ -4,3 +4,4 @@ python-pptx
 matplotlib
 paramiko
 sentence_transformers
+openpyxl
