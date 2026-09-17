@@ -1,11 +1,9 @@
 import streamlit as st
 from sentence_transformers import SentenceTransformer
 
-
 @st.cache_resource
 def load_model():
     return SentenceTransformer("intfloat/multilingual-e5-small")
-
 
 @st.cache_data
 def embed_katalog(apps):
@@ -20,7 +18,8 @@ def embed_katalog(apps):
 
 TECH_COLORS = {
     "Streamlit": "#ff4b4b",
-    "Shiny": "#75aadb"
+    "Shiny": "#75aadb",
+    "Tableau": "#f0b289"
 }
 
 col_logo, col_title = st.columns([1, 4])
@@ -31,7 +30,7 @@ col_logo, col_title = st.columns([1, 4])
 with col_title:
     st.title("Overblik over vores fede apps")
 
-dimitender, organisation, forskning, studier = st.tabs(["Dimitender", "Organisationen", "Forskning", "Studier"])
+dimitender, organisation, forskning = st.tabs(["Dimitender", "Organisationen", "Forskning"])
 
 # --- DIMITENDER ---
 with dimitender:
@@ -65,6 +64,52 @@ with dimitender:
             </a>
             """, unsafe_allow_html=True)
 
+# --- ORGANISATION ---
+with organisation:
+    st.subheader("Fede Tableau dashboards")
+
+    apps_organisation = [
+    {
+        "navn": "Personaleudvikling på KU",
+        "url": (
+            "https://tableau.ku.dk/#/site/KU_BI/views/Personaleudvikling/"
+            "PersonaleudviklingKU?:display_count=n&:iid=1"
+        ),
+        "beskrivelse": (
+            "Udvikling i personaleforbrug og ansættelsesforhold på KU over "
+            "tid, fordelt på fakultet, institut, VIP/TAP og stillingsgruppe."
+        ),
+        "keywords": (
+            "personale, personaleforbrug, personaleudvikling, medarbejdere, "
+            "ansatte, ansættelsesforhold, årsværk, FTE, fuldtid, deltid, "
+            "bemanding, stillinger, stillingsgruppe, stillingsfordeling, "
+            "VIP, TAP, DVIP, DTAP, Faculty-VIP, Ikke Faculty-VIP, professor, "
+            "lektor, klinisk professor, adjunkt, tenure track, løngrupper, "
+            "institutter, fakulteter, HR, personalestatistik, "
+            "udvikling over tid, trend, måned, år, Tableau, dashboard, "
+            "graf, søjlediagram, tabel, KU, Københavns Universitet"
+        ),
+        "tech": "Tableau",
+    },
+        # Tilføj flere her efterhånden
+    ]
+
+    cols = st.columns(3)
+    for i, app in enumerate(apps_organisation):
+        tech_farve = TECH_COLORS.get(app["tech"], "#888888")
+        with cols[i % 3]:
+            st.markdown(f"""
+            <a href="{app['url']}" target="_blank" style="text-decoration:none; color:inherit">
+                <div style="border:1px solid #ddd; border-radius:10px; padding:20px; text-align:center;">
+                    <h4>{app['navn']}</h4>
+                    <p style="color:gray; font-size:0.85em">{app['beskrivelse']}</p>
+                    <span style="background:{tech_farve}22; color:{tech_farve}; 
+                                 padding:2px 10px; border-radius:20px; font-size:0.75em">
+                        {app['tech']}
+                    </span>
+                </div>
+            </a>
+            """, unsafe_allow_html=True)
 
 # --- FORSKNING ---
 with forskning:
