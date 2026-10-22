@@ -11,7 +11,7 @@ DATA_PATH = os.path.join(os.path.dirname(__file__), "data", "apps.xlsx")
 
 @st.cache_resource
 def load_model():
-    return SentenceTransformer("intfloat/multilingual-e5-small")
+    return SentenceTransformer("intfloat/multilingual-e5-small") #mindre udgave af gemma4?
 
 
 @st.cache_data
